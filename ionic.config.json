@@ -1,0 +1,7 @@
+{
+  "name": "Volado",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
