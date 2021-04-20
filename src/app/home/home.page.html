@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Blank
+      Ejercicio Volados
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -9,12 +9,196 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
+      <ion-title size="large">Ejercicio Volados</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+  <div>
+    <ion-card>
+      <ion-card-header>
+        <ion-title  size="large">Descripción</ion-title>
+      </ion-card-header>
+      <ion-card-content>
+        <h3 class="ion-text-center">Existe un método viejo para jugar cara y sello, que consiste en doblar la apuesta
+          cada vez que se pierde. Por ejemplo, si se apuesta $X y se pierde, entonces, se apuesta $2X; si en esta
+          ocasión se vuelve a perder, entonces, se apuesta $4X y así sucesivamente. Sin embargo, si al seguir esta
+          política sucede que la apuesta es mayor que la cantidad de que se dispone, entonces, se apuesta lo que se
+          tiene disponible, por el contrario, cada vez que se gane, la apuesta será de $X. si la cantidad inicial
+          disponible es de $30, la apuesta es de $10, la ganancia es igual a la cantidad apostada, la probabilidad de
+          ganar en un cara y sello es de 0.5 y se quiere tener $50. Realice una simulación para determinar cuál es la
+          probabilidad de llegar a la meta en un número variable de intentos. El programa debería mostrar una tabla como
+          la que se ilustra en la imagen adjunta.</h3>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <div>
+    <ion-list>
+      <ion-item>
+        <ion-label position="floating" color="primary">Dinero inicial</ion-label>
+        <ion-input type="number" value="dineroInicial.dineroIni" name="dineroIni" [(ngModel)]="dineroInicial">
+        </ion-input>
+      </ion-item>
+      <ion-item *ngIf="dineroInicial < 1">
+        <ion-label position="stacked" color="danger">El Dinero Inicial debe ser mayor a cero "0"
+        </ion-label>
+      </ion-item>
+      <!-- Hacer validaciones en el fomrulario de reglas del  negocio -->
+      <ion-item *ngIf="dineroInicial && dineroInicial > 0">
+        <ion-label position="floating" color="primary">Apuesta inicial</ion-label>
+        <ion-input type="number" [(ngModel)]="Apuestainicial"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="dineroInicial < Apuestainicial">
+        <ion-label position="stacked"  color="danger">La Apuesta debe ser menor al dinero inicial
+        </ion-label>
+      </ion-item>
+      <ion-item *ngIf="Apuestainicial < 1">
+        <ion-label position="stacked" color="danger">La Apuesta debe ser mayor a cero "0"
+        </ion-label>
+      </ion-item>
+
+      <ion-item *ngIf="Apuestainicial && dineroInicial >= Apuestainicial && Apuestainicial > 0">
+        <ion-label position="stacked" color="primary">Seleccionar lado</ion-label>
+        <ion-select placeholder="Seleccione Uno" [(ngModel)]="selectMoneda">
+          <ion-select-option value="cara">Cara</ion-select-option>
+          <ion-select-option value="sello">Sello</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item *ngIf="selectMoneda">
+        <ion-label position="floating" color="primary">Meta</ion-label>
+        <ion-input type="number" [(ngModel)]="meta"></ion-input>
+      </ion-item>
+
+      <ion-item *ngIf="meta">
+        <ion-label position="floating" color="primary">Cantidad de simulaciones</ion-label>
+        <ion-input type="number" [(ngModel)]="numberSimulations"></ion-input>
+      </ion-item>
+      <!-- <ion-item *ngIf="numberSimulations < 1">
+        <ion-label position="stacked" color="danger">La cantidad de simulaciones debe ser mayor a cero "0"
+        </ion-label>
+      </ion-item> -->
+
+      <ion-button *ngIf="numberSimulations" shape="round" expand="full" (click)="simular()">Jugar</ion-button>
+    </ion-list>
+  </div>
+
+  <div *ngIf="solucion">
+    <ion-card *ngFor="let item of dataResult | keyvalue">
+      <ion-card-title>
+        {{item.key}} {{dataResult[item.key]['resultado'] == "meta"? "LLego a la meta🏆" : "Quedo en quiebra ❌☠" }}
+      </ion-card-title>
+      <ion-card-content *ngFor=" let itemData of dataResult[item.key]; index as index">
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              Dinero Inicial
+              <div>
+                {{itemData.dinero}}
+              </div>
+            </ion-col>
+            <ion-col>
+              Apuesta Inicial
+              <div>
+                {{itemData.apuesta}}
+              </div>
+            </ion-col>
+            <ion-col>
+              Número Aleatorio
+              <div>
+                {{itemData.aleatorio.toFixed(3)}}
+              </div>
+            </ion-col>
+            <ion-col>
+              Ganó el juego
+              <div>
+                {{itemData.gano}}
+              </div>
+            </ion-col>
+            <ion-col>
+              Dinero Total
+              <div>
+                {{itemData.dineroTotal}}
+              </div>
+            </ion-col>
+          </ion-row>
+
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+
+    
+  </div>
+  
+  <div *ngIf="solucion">
+    
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Resultado</ion-card-title>
+      </ion-card-header>
+      
+      <ion-card-content>
+        Después de realizar un total de {{this.numberSimulations}} simulaciones, apostando en el juego de volado a
+        {{this.selectMoneda}} se obtienen los siguientes datos:
+        <div >
+          <ion-grid>
+            <ion-row>
+              <ion-col>
+              </ion-col>
+              <ion-col>
+              </ion-col>
+              <ion-col class="ion-text-center">
+                Probabilidad
+              </ion-col>
+              <ion-col class="ion-text-center">
+                N° Veces
+              </ion-col>
+              <ion-col>
+              </ion-col>
+            </ion-row>
+
+            <ion-row>
+              <ion-col>
+              </ion-col>
+              <ion-col>
+                Llegar a la Meta
+              </ion-col>
+              <ion-col class="ion-text-center">
+                <div>
+                  {{((this.numberSimulations - this.quiebra) / this.numberSimulations)*100}} %
+                </div>
+              </ion-col>
+              <ion-col class="ion-text-center">
+                <div>
+                  {{this.numberSimulations - this.quiebra}}
+                </div>
+              </ion-col>
+              <ion-col>
+              </ion-col>
+            </ion-row>
+
+            <ion-row>
+              <ion-col>
+              </ion-col>
+              <ion-col>
+                Quedar en Quiebra
+              </ion-col>
+              <ion-col class="ion-text-center">
+                <div>
+                  {{((this.quiebra) / this.numberSimulations)*100}} %
+                </div>
+              </ion-col>
+              <ion-col class="ion-text-center">
+                <div>
+                  {{this.quiebra}}
+                </div>
+              </ion-col>
+              <ion-col>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </div>
+      </ion-card-content>
+    </ion-card>
   </div>
 </ion-content>
